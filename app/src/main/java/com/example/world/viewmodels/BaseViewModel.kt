@@ -3,8 +3,10 @@ package com.example.world.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+
 
 open class BaseViewModel : ViewModel() {
     private var mJob: Job? = null

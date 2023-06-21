@@ -1,7 +1,9 @@
 package com.example.world
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -16,12 +18,19 @@ import com.example.world.utils.ApiResponse
 import com.example.world.viewmodels.AuthViewModel
 import com.example.world.viewmodels.CoroutinesErrorHandler
 import com.example.world.viewmodels.TokenViewModel
+import com.google.android.datatransport.runtime.dagger.Module
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.components.ViewModelComponent
 
 //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://fir-bf64e-default-rtdb.firebaseio.com/");
 
-@AndroidEntryPoint
+@Module
+@EntryPoint
+@InstallIn(ViewModelComponent::class)
 class Login : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModels()
     private val tokenViewModel: TokenViewModel by viewModels()
@@ -79,17 +88,28 @@ class Login : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
+                FirebaseMessaging.getInstance().token
+                    .addOnCompleteListener(OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Log.w(
+                                ContentValues.TAG,
+                                "Fetching FCM registration token failed",
+                                task.exception
+                            )
+                            return@OnCompleteListener
+                        }
 
                 viewModel.login(
-                    Auth(phoneTxt, passwordTxt),
-
-
+                    Auth(phoneTxt, passwordTxt,task.result),
                     object: CoroutinesErrorHandler {
                         override fun onError(message: String) {
 
                         }
                     }
-                )
+                )})
+
+
+
 
 
             }
