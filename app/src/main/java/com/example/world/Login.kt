@@ -6,15 +6,30 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import com.example.world.models.Auth
+import com.example.world.viewmodels.AuthViewModel
+import com.example.world.viewmodels.CoroutinesErrorHandler
+import com.example.world.viewmodels.TokenViewModel
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 
 //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://fir-bf64e-default-rtdb.firebaseio.com/");
 
+@AndroidEntryPoint
 class Login : AppCompatActivity() {
+    private val viewModel: AuthViewModel by viewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+
 
         FirebaseMessaging.getInstance().subscribeToTopic("Hello")
             .addOnCompleteListener { task ->
@@ -24,10 +39,15 @@ class Login : AppCompatActivity() {
                 }
             }
 
+
+
+
         val phone = findViewById<EditText>(R.id.phone)
         val password = findViewById<EditText>(R.id.password)
         val loginBtn = findViewById<Button>(R.id.loginBtn)
         val registerNowBtn = findViewById<TextView>(R.id.registerNowBtn)
+
+
 
         loginBtn.setOnClickListener {
             val phoneTxt = phone.text.toString()
@@ -39,6 +59,18 @@ class Login : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
+
+                viewModel.login(
+                    Auth(phoneTxt, passwordTxt),
+
+
+                    object: CoroutinesErrorHandler {
+                        override fun onError(message: String) {
+
+                        }
+                    }
+                )
+                startActivity(Intent(this,MainActivity::class.java))
             }
         }
 
@@ -135,4 +167,5 @@ class Login : AppCompatActivity() {
             startActivity(Intent(this@Login, Register::class.java))
         }
     }
+
 }
