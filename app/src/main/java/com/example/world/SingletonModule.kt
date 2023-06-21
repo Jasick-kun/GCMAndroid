@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.world.service.auth.AuthApiService
 import com.example.world.service.main.MainApiService
-import com.example.world.utils.AuthAuthenticator
 import com.example.world.utils.AuthInterceptor
 import com.example.world.utils.TokenManager
 
@@ -61,7 +60,7 @@ class SingletonModule {
     @Provides
     fun provideRetrofitBuilder(): Retrofit.Builder =
         Retrofit.Builder()
-            .baseUrl("https://13d7-82-200-168-86.ngrok-free.app/api/")
+            .baseUrl(BaseUrl.url)
             .addConverterFactory(GsonConverterFactory.create())
 
     @Singleton

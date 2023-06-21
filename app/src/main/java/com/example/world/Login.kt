@@ -10,7 +10,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import com.example.world.models.Auth
+import com.example.world.utils.ApiResponse
 import com.example.world.viewmodels.AuthViewModel
 import com.example.world.viewmodels.CoroutinesErrorHandler
 import com.example.world.viewmodels.TokenViewModel
@@ -22,22 +24,40 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class Login : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModels()
-
-
+    private val tokenViewModel: TokenViewModel by viewModels()
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_login)
+        tokenViewModel.token.observe(this) { token ->
+            if (token != null)
+                startActivity(Intent(this,MainActivity::class.java))
+        }
 
-
-
-        FirebaseMessaging.getInstance().subscribeToTopic("Hello")
-            .addOnCompleteListener { task ->
-                var msg = "Done"
-                if (!task.isSuccessful) {
-                    msg = "Failed"
+        viewModel.loginResponse.observe(this) {
+            when(it) {
+                is ApiResponse.Failure ->  Toast.makeText(
+                    this@Login,
+                    "Ошибка авторизаций",
+                    Toast.LENGTH_SHORT
+                ).show()
+                is ApiResponse.Success -> {
+                    tokenViewModel.saveToken(it.data.token)
                 }
+                else -> {}
             }
+        }
+
+
+//        FirebaseMessaging.getInstance().subscribeToTopic("Hello")
+//            .addOnCompleteListener { task ->
+//                var msg = "Done"
+//                if (!task.isSuccessful) {
+//                    msg = "Failed"
+//                }
+//            }
 
 
 
@@ -70,7 +90,8 @@ class Login : AppCompatActivity() {
                         }
                     }
                 )
-                startActivity(Intent(this,MainActivity::class.java))
+
+
             }
         }
 

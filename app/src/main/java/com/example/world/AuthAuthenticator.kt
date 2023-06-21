@@ -1,7 +1,8 @@
-package com.example.world.utils
+package com.example.world
 
 import com.example.world.models.LoginResponse
 import com.example.world.service.auth.AuthApiService
+import com.example.world.utils.TokenManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.*
@@ -40,7 +41,7 @@ class AuthAuthenticator @Inject constructor(
         val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://13d7-82-200-168-86.ngrok-free.app/api/")
+            .baseUrl(BaseUrl.url)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
